@@ -126,11 +126,12 @@ def main(config):
             com += ["--account={}".format(config.account)]
             com += ["--output={}/%x-%j.out".format(config.output_dir)]
             com += ["--export=ALL"]
-            com += ["bash"]
             com += [os.path.join(config.done_dir, job_script)]
             slurm_res = subprocess.run(com, stdout=subprocess.PIPE)
             print(slurm_res.stdout)
             # Get job ID
+            import IPython
+            IPython.embed()
             job_id = slurm_res.stdout.decode().split(" ")[4]
             dep_str = str(job_id)
 
