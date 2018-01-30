@@ -133,7 +133,7 @@ def main(config):
             com += ["--export=ALL"]
             com += [os.path.join(config.done_dir, job_script)]
             slurm_res = subprocess.run(com, stdout=subprocess.PIPE)
-            print(slurm_res.stdout)
+            print(slurm_res.stdout.decode())
             # Get job ID
             if slurm_res.returncode != 0:
                 raise RuntimeError("Slurm error!")
