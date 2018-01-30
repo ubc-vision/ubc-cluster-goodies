@@ -83,13 +83,13 @@ def main(config):
     time_limit = config.time_limit
 
     # Get jobs that this new job should depend on.
+    job_depends = []
     if config.depends_key != "none":
         squeue_res = subprocess.run(
             ["squeue", "-u", username],
             stdout=subprocess.PIPE
         )
         job_details = squeue_res.stdout.decode().split("\n")[1:]
-        job_depends = []
         # For each job create a list of IDs
         for _str in job_details:
             # Look for job dependency keys in string
