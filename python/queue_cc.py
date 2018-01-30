@@ -71,7 +71,7 @@ def main(config):
                 num_cpu = str(24 // 4 * num_gpu)
             elif cluster == "graham":
                 num_cpu = str(32 // 2 * num_gpu)
-    mem = config.mem_cpu
+    mem = config.mem
     if mem.lower() == "auto":
         if num_gpu > 0:
             if cluster == "cedar":
