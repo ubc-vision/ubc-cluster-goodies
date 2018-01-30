@@ -126,7 +126,8 @@ def main(config):
                 com += ["--gres=gpu:{}".format(num_gpu)]
             com += ["--mem={}".format(mem)]
             com += ["--time={}".format(time_limit)]
-            com += ["--dependency=afterany:{}".format(dep_str)]
+            if len(dep_str) > 0:
+                com += ["--dependency=afterany:{}".format(dep_str)]
             com += ["--account={}".format(config.account)]
             com += ["--output={}/%x-%j.out".format(config.output_dir)]
             com += ["--export=ALL"]
@@ -134,9 +135,9 @@ def main(config):
             slurm_res = subprocess.run(com, stdout=subprocess.PIPE)
             print(slurm_res.stdout)
             # Get job ID
-            import IPython
-            IPython.embed()
-            job_id = slurm_res.stdout.decode().split(" ")[4]
+            if slurm_res.returncode != 0:
+                raise RuntimeError("Slurm error!")
+            job_id = slurm_res.stdout.decode().split()[-1]
             dep_str = str(job_id)
 
 
