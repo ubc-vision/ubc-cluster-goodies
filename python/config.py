@@ -57,7 +57,7 @@ global_arg.add_argument("--todo_dir", type=str,
                         help="")
 
 global_arg.add_argument("--done_dir", type=str,
-                        default="./jobs/todo",
+                        default="./jobs/done",
                         help="")
 
 global_arg.add_argument("--output_dir", type=str,
