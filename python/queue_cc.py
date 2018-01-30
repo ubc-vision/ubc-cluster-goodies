@@ -100,13 +100,17 @@ def main(config):
     # Run jobs
     for idx_job in range(config.num_jobs):
         # Grab a job from the list of jobs
+        found_job = False
         for _f in os.listdir(config.todo_dir):
             if _f.endswith(".sh"):
                 job_script = _f
                 print("Queueing script {}".format(
                     os.path.join(config.todo_dir, job_script)
                 ))
+                found_job = True
                 break
+        if not found_job:
+            raise RuntimeError("No job found in {}".format(config.todo_dir))
         # Move that job to the done folder
         shutil.move(
             os.path.join(config.todo_dir, job_script),
