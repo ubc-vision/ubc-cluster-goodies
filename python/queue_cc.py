@@ -103,6 +103,9 @@ def main(config):
         for _f in os.listdir(config.todo_dir):
             if _f.endswith(".sh"):
                 job_script = _f
+                print("Queueing script {}".format(
+                    os.path.join(config.todo_dir, job_script)
+                ))
                 break
         # Move that job to the done folder
         shutil.move(
@@ -126,6 +129,7 @@ def main(config):
             com += ["bash"]
             com += [os.path.join(config.done_dir, job_script)]
             slurm_res = subprocess.run(com, stdout=subprocess.PIPE)
+            print(slurm_res.stdout)
             # Get job ID
             job_id = slurm_res.stdout.decode().split(" ")[4]
             dep_str = str(job_id)
