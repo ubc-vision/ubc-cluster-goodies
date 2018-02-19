@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # queue_cc.py ---
 #
 # Filename: queue_cc.py
