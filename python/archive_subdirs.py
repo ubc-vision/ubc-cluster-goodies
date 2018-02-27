@@ -150,9 +150,10 @@ def main(config):
         com += ["--mem={}".format(mem)]
         com += ["--time={}".format(time_limit)]
         com += ["--account={}".format(config.account)]
-        com += ["--output={}.out".format(cur_dir + ".tar.gz.out")]
+        com += ["--output={}".format(cur_dir + ".tar.gz.out")]
         com += ["--export=ALL"]
-        com += ["../bash/archive_dir.sh"]
+        com += ["./bash/archive_dir.sh"]
+        com += ["{}".format(cur_dir)]
         slurm_res = subprocess.run(com, stdout=subprocess.PIPE)
         print(slurm_res.stdout.decode())
         # Get job ID
