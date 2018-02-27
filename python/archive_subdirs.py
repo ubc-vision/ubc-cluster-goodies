@@ -131,6 +131,10 @@ def main(config):
     # Set time limit
     time_limit = config.time_limit
 
+    if config.archive_dir is None:
+        print_usage()
+        exit(1)
+
     # For each file in the archive directory
     for _f in os.listdir(config.archive_dir):
         cur_dir = os.path.join(config.archive_dir, _f)
