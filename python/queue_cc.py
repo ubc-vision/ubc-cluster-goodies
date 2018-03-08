@@ -188,7 +188,10 @@ def main(config):
     for idx_job in range(config.num_jobs):
         # Grab a job from the list of jobs
         found_job = False
-        for _f in os.listdir(config.todo_dir):
+        # Sort -- Just in case
+        list_files = os.listdir(config.todo_dir)
+        list_files.sort()
+        for _f in list_files:
             if _f.endswith(".sh"):
                 job_script = _f
                 print("Queueing script {}".format(
