@@ -1,3 +1,6 @@
+This repository has moved to a our groups repository!
+[https://github.com/vcg-uvic/compute-canada-goodies](https://github.com/vcg-uvic/compute-canada-goodies)
+
 # compute-canada-goodies
 Automation scripts for compute canada
 
