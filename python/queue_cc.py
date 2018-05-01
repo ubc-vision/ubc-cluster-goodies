@@ -182,7 +182,7 @@ def main(config):
             # Look for job dependency keys in string
             if config.depends_key in _str:
                 # Add to the list of dependent jobs
-                job_depends += [int(_str.split()[0])]
+                job_depends += [str(int(_str.split()[0]))]
 
     # Run jobs
     for idx_job in range(config.num_jobs):
