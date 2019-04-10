@@ -34,13 +34,40 @@ import os
 import shutil
 import socket
 import subprocess
-import json
 
 # ----------------------------------------
 # Global variables within this script
 arg_lists = []
 parser = argparse.ArgumentParser()
-
+cluster_config = {
+    'cedar':
+        {
+            'gpu_model': 'p100',
+            'gpus_per_node': 4,
+            'cpu_cores_per_node': 24,
+            'cpu_cores_per_gpu': 6,
+            'ram_per_node': 128000,
+            'ram_per_gpu': 31500,
+        },
+    'graham':
+        {
+            'gpu_model': 'p100',
+            'gpus_per_node': 2,
+            'cpu_cores_per_node': 32,
+            'cpu_cores_per_gpu': 16,
+            'ram_per_node': 127518,
+            'ram_per_gpu': 63500,
+        },
+    'beluga':
+        {
+            'gpu_model': 'v100',
+            'gpus_per_node': 4,
+            'cpu_cores_per_node': 40,
+            'cpu_cores_per_gpu': 10,
+            'ram_per_node': 191000,
+            'ram_per_gpu': 47500,
+        }
+}
 
 def add_argument_group(name):
     arg = parser.add_argument_group(name)
@@ -137,10 +164,6 @@ def main(config):
     # Get hostname and user name
     username = getpass.getuser()
     hostname = socket.gethostname()
-
-    # Get cluster configuration
-    with open('cluster_config.json', 'r') as config_file:
-        cluster_config = json.load(config_file)
 
     # Identify cluster
     if hostname.startswith("gra"):
