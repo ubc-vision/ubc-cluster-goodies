@@ -69,6 +69,7 @@ cluster_config = {
         }
 }
 
+
 def add_argument_group(name):
     arg = parser.add_argument_group(name)
     arg_lists.append(arg)
