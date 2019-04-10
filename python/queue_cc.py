@@ -34,6 +34,7 @@ import os
 import shutil
 import socket
 import subprocess
+import json
 
 # ----------------------------------------
 # Global variables within this script
@@ -51,12 +52,11 @@ def add_argument_group(name):
 # Arguments for training
 global_arg = add_argument_group("Global")
 
-
 global_arg.add_argument(
     "--account", type=str,
     default="def-kyi",
     help="Slurm account to use. "
-    "Please change this to your compute canada account")
+         "Please change this to your compute canada account")
 
 global_arg.add_argument(
     "--todo_dir", type=str,
@@ -77,7 +77,6 @@ global_arg.add_argument(
 # Arguments for model
 job_arg = add_argument_group("Job")
 
-
 job_arg.add_argument(
     "--num_jobs", type=int,
     default=1,
@@ -86,7 +85,7 @@ job_arg.add_argument(
     "--num_runs", type=int,
     default=5,
     help="Number of times this shell script will be executed. "
-    "This is useful when running 3 hour jobs that run multiple times.")
+         "This is useful when running 3 hour jobs that run multiple times.")
 job_arg.add_argument(
     "--num_gpu", type=int,
     default=1,
@@ -95,23 +94,23 @@ job_arg.add_argument(
     "--num_cpu", type=str,
     default="auto",
     help="Number of CPU cores to use. Can be infered from the GPU."
-    "Set 'auto' to do that.")
+         "Set 'auto' to do that.")
 job_arg.add_argument(
     "--mem", type=str,
     default="auto",
     help="Amount of memory to use. See compute canada wiki for details "
-    "on large memory nodes. Typically, you don't want to go over 8G per "
-    "CPU core")
+         "on large memory nodes. Typically, you don't want to go over 8G per "
+         "CPU core")
 job_arg.add_argument(
     "--time_limit", type=str,
     default="0-03:00",
     help="Time limit on the jobs. If you can, 3 hours give you the best "
-    "turn around.")
+         "turn around.")
 job_arg.add_argument(
     "--depends_key", type=str,
     default="none",
     help="In case you want to schedule your jobs depending on something. "
-    "Set to 'none' if not wanted.")
+         "Set to 'none' if not wanted.")
 
 
 def get_config():
@@ -139,11 +138,17 @@ def main(config):
     username = getpass.getuser()
     hostname = socket.gethostname()
 
+    # Get cluster configuration
+    with open('cluster_config.json', 'r') as config_file:
+        cluster_config = json.load(config_file)
+
     # Identify cluster
     if hostname.startswith("gra"):
         cluster = "graham"
     elif hostname.startswith("cedar") or hostname.startswith("cdr"):
         cluster = "cedar"
+    elif hostname.startswith("beluga"):
+        cluster = "beluga"
     else:
         raise ValueError("Unknown cluster {}".format(hostname))
 
@@ -154,17 +159,13 @@ def main(config):
     num_cpu = config.num_cpu
     if num_cpu.lower() == "auto":
         if num_gpu > 0:
-            if cluster == "cedar":
-                num_cpu = str(24 // 4 * num_gpu)
-            elif cluster == "graham":
-                num_cpu = str(32 // 2 * num_gpu)
+            num_cores_per_gpu = cluster_config[cluster]["cpu_cores_per_gpu"]
+            num_cpu = str(num_cores_per_gpu * num_gpu)
     mem = config.mem
     if mem.lower() == "auto":
         if num_gpu > 0:
-            if cluster == "cedar":
-                mem = str(31500 * num_gpu) + "M"
-            elif cluster == "graham":
-                mem = str(63500 * num_gpu) + "M"
+            ram_per_gpu = cluster_config[cluster]["ram_per_gpu"]
+            mem = str(ram_per_gpu * num_gpu) + "M"
 
     # Set time limit
     time_limit = config.time_limit
@@ -242,7 +243,6 @@ if __name__ == "__main__":
         exit(1)
 
     main(config)
-
 
 #
 # queue_cc.py ends here
