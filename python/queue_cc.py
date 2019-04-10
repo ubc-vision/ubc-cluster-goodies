@@ -40,32 +40,32 @@ import subprocess
 arg_lists = []
 parser = argparse.ArgumentParser()
 cluster_config = {
-    'cedar':
+    "cedar":
         {
-            'gpu_model': 'p100',
-            'gpus_per_node': 4,
-            'cpu_cores_per_node': 24,
-            'cpu_cores_per_gpu': 6,
-            'ram_per_node': 128000,
-            'ram_per_gpu': 31500,
+            "gpu_model": "p100",
+            "gpus_per_node": 4,
+            "cpu_cores_per_node": 24,
+            "cpu_cores_per_gpu": 6,
+            "ram_per_node": 128000,
+            "ram_per_gpu": 31500,
         },
-    'graham':
+    "graham":
         {
-            'gpu_model': 'p100',
-            'gpus_per_node': 2,
-            'cpu_cores_per_node': 32,
-            'cpu_cores_per_gpu': 16,
-            'ram_per_node': 127518,
-            'ram_per_gpu': 63500,
+            "gpu_model": "p100",
+            "gpus_per_node": 2,
+            "cpu_cores_per_node": 32,
+            "cpu_cores_per_gpu": 16,
+            "ram_per_node": 127518,
+            "ram_per_gpu": 63500,
         },
-    'beluga':
+    "beluga":
         {
-            'gpu_model': 'v100',
-            'gpus_per_node': 4,
-            'cpu_cores_per_node': 40,
-            'cpu_cores_per_gpu': 10,
-            'ram_per_node': 191000,
-            'ram_per_gpu': 47500,
+            "gpu_model": "v100",
+            "gpus_per_node": 4,
+            "cpu_cores_per_node": 40,
+            "cpu_cores_per_gpu": 10,
+            "ram_per_node": 191000,
+            "ram_per_gpu": 47500,
         }
 }
 
