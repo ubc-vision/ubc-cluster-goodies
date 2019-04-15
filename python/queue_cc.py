@@ -171,7 +171,7 @@ def main(config):
         cluster = "graham"
     elif hostname.startswith("cedar") or hostname.startswith("cdr"):
         cluster = "cedar"
-    elif hostname.startswith("beluga"):
+    elif hostname.startswith("beluga") or hostname.startswith("blg"):
         cluster = "beluga"
     else:
         raise ValueError("Unknown cluster {}".format(hostname))
