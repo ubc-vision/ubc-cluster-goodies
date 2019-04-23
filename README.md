@@ -35,7 +35,7 @@ So to have proper modules we need for our case, simply do the following:
 ```
 $ module load cudnn cuda eigen python/3
 ```
-In my case, I also unload some of the modules that I won't be using, so I have the following lines in my `.bashrc`
+In my case, I also unload some of the modules that I won't be using, so I have the following lines in my `.bashrc` -- **NOTE THAT THIS IS STRONGLY DISCOURAGED. IT WILL CAUSE ISSUES**
 ```
 module unload icc gcccore ifort intel imkl openmpi
 module load gcc/5.4.0 cuda cudnn eigen python/3
