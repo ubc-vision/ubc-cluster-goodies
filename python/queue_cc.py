@@ -72,7 +72,7 @@ cluster_config = {
             "gpu_model": "v100",
             "gpus_per_node": 8,
             "cpu_cores_per_node": 28,
-            "cpu_cores_per_gpu": 3.5,
+            "cpu_cores_per_gpu": 3,
             "ram_per_node": 191000,
             "ram_per_gpu": 23875,
         }
