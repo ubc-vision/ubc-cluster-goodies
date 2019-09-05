@@ -66,6 +66,15 @@ cluster_config = {
             "cpu_cores_per_gpu": 10,
             "ram_per_node": 191000,
             "ram_per_gpu": 47500,
+        },
+    "moo":
+        {
+            "gpu_model": "v100",
+            "gpus_per_node": 8,
+            "cpu_cores_per_node": 28,
+            "cpu_cores_per_gpu": 3.5,
+            "ram_per_node": 191000,
+            "ram_per_gpu": 23875,
         }
 }
 
@@ -173,6 +182,8 @@ def main(config):
         cluster = "cedar"
     elif hostname.startswith("beluga") or hostname.startswith("blg"):
         cluster = "beluga"
+    elif hostname.startswith("stirk"):
+        cluster = "moo"
     else:
         raise ValueError("Unknown cluster {}".format(hostname))
 
