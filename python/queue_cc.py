@@ -45,7 +45,9 @@ cluster_config = {
             "gpu_model": "p100",
             "gpus_per_node": 4,
             "cpu_cores_per_node": 24,
+            "threads_per_node": 48,
             "cpu_cores_per_gpu": 6,
+            "threads_per_gpu": 12,
             "ram_per_node": 128000,
             "ram_per_gpu": 31500,
         },
@@ -54,7 +56,9 @@ cluster_config = {
             "gpu_model": "p100",
             "gpus_per_node": 2,
             "cpu_cores_per_node": 32,
+            "threads_per_node": 64,
             "cpu_cores_per_gpu": 16,
+            "threads_per_gpu": 32,
             "ram_per_node": 127518,
             "ram_per_gpu": 63500,
         },
@@ -63,9 +67,22 @@ cluster_config = {
             "gpu_model": "v100",
             "gpus_per_node": 4,
             "cpu_cores_per_node": 40,
+            "threads_per_node": 80,
             "cpu_cores_per_gpu": 10,
+            "threads_per_gpu": 20,
             "ram_per_node": 191000,
             "ram_per_gpu": 47500,
+        },
+    "moo":
+        {
+            "gpu_model": "v100",
+            "gpus_per_node": 8,
+            "cpu_cores_per_node": 28,
+            "threads_per_node": 56,
+            "cpu_cores_per_gpu": 3,
+            "threads_per_gpu": 7,
+            "ram_per_node": 191000,
+            "ram_per_gpu": 23875,
         }
 }
 
@@ -173,6 +190,8 @@ def main(config):
         cluster = "cedar"
     elif hostname.startswith("beluga") or hostname.startswith("blg"):
         cluster = "beluga"
+    elif hostname.startswith("stirk"):
+        cluster = "moo"
     else:
         raise ValueError("Unknown cluster {}".format(hostname))
 
