@@ -202,7 +202,7 @@ def main(config):
     num_cpu = config.num_cpu
     if num_cpu.lower() == "auto":
         if num_gpu > 0:
-            num_cores_per_gpu = cluster_config[cluster]["threads_per_gpu"]
+            num_cores_per_gpu = cluster_config[cluster]["cpu_cores_per_gpu"]
             num_cpu = str(num_cores_per_gpu * num_gpu)
     mem = config.mem
     if mem.lower() == "auto":
