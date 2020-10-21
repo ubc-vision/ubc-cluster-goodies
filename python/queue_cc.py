@@ -34,6 +34,7 @@ import os
 import shutil
 import socket
 import subprocess
+import datetime
 
 # ----------------------------------------
 # Global variables within this script
@@ -50,6 +51,7 @@ cluster_config = {
             "threads_per_gpu": 12,
             "ram_per_node": 128000,
             "ram_per_gpu": 31500,
+            "job_system": "slurm",
         },
     "graham":
         {
@@ -61,6 +63,7 @@ cluster_config = {
             "threads_per_gpu": 32,
             "ram_per_node": 127518,
             "ram_per_gpu": 63500,
+            "job_system": "slurm",
         },
     "beluga":
         {
@@ -72,6 +75,7 @@ cluster_config = {
             "threads_per_gpu": 20,
             "ram_per_node": 191000,
             "ram_per_gpu": 47500,
+            "job_system": "slurm",
         },
     "moo":
         {
@@ -83,8 +87,55 @@ cluster_config = {
             "threads_per_gpu": 7,
             "ram_per_node": 191000,
             "ram_per_gpu": 23875,
+            "job_system": "slurm",
+        },
+    "sockeye":
+        {
+            "gpu_model": "v100",
+            "gpus_per_node": 4,
+            "cpu_cores_per_node": 24,
+            "threads_per_node": None,
+            "cpu_cores_per_gpu": 6,
+            "threads_per_gpu": None,
+            "ram_per_node": 191000,
+            "ram_per_gpu": 47750,
+            "job_system": "PBS",
         }
 }
+
+
+def slurm_command(num_cpu, num_gpu, mem, time_limit, dep_str, account, output_dir, job):
+    com = ["sbatch"]
+    com += ["--cpus-per-task={}".format(num_cpu)]
+    if num_gpu > 0:
+        com += ["--gres=gpu:{}".format(num_gpu)]
+    com += ["--mem={}".format(mem)]
+    com += ["--time={}".format(time_limit)]
+    if len(dep_str) > 0:
+        com += ["--dependency=afterany:{}".format(dep_str)]
+    com += ["--account={}".format(account)]
+    com += ["--output={}/%x-%j.out".format(output_dir)]
+    com += ["--export=ALL"]
+    com += [job]
+    return com
+
+
+def PBS_command(num_cpu, num_gpu, mem, time_limit, dep_str, account, output_dir, job):
+    com = ["qsub"]
+    if num_gpu > 0:
+        com += ["-l walltime={0},select=1:ncpus={1}:mem={2}:ngpus={3}".format(time_limit, num_cpu, mem, num_gpu)]
+    else:
+        com += ["-l walltime={0},select=1:ncpus={1}:mem={2}".format(time_limit, num_cpu, mem)]
+    if len(dep_str) > 0:
+        com += ["-d {}".format(dep_str)]
+    com += ["-A {}".format(account)]
+    com += ["-o {0}/{1}_{2}.out".format(output_dir,
+                                        os.path.basename(job),
+                                        str(datetime.datetime.now()).replace(" ", "_").replace(":", "_"),
+                                        )]
+    com += ["-V"]
+    com += [job]
+    return com
 
 
 def add_argument_group(name):
@@ -148,9 +199,9 @@ job_arg.add_argument(
          "CPU core")
 job_arg.add_argument(
     "--time_limit", type=str,
-    default="0-03:00",
+    default="03:00:00",
     help="Time limit on the jobs. If you can, 3 hours give you the best "
-         "turn around.")
+         "turn around. Hours:Minutes:Seconds")
 job_arg.add_argument(
     "--depends_key", type=str,
     default="none",
@@ -192,6 +243,8 @@ def main(config):
         cluster = "beluga"
     elif hostname.startswith("stirk"):
         cluster = "moo"
+    elif hostname.startswith("se"):
+        cluster = "sockeye"
     else:
         raise ValueError("Unknown cluster {}".format(hostname))
 
@@ -216,6 +269,7 @@ def main(config):
     # Get jobs that this new job should depend on.
     job_depends = []
     if config.depends_key != "none":
+        assert cluster_config[cluster]["job_system"] == "slurm"
         squeue_res = subprocess.run(
             ["squeue", "-u", username],
             stdout=subprocess.PIPE
@@ -254,23 +308,29 @@ def main(config):
         dep_str = ":".join(job_depends)
         # Run job N times
         for idx_run in range(config.num_runs):
-            com = ["sbatch"]
-            com += ["--cpus-per-task={}".format(num_cpu)]
-            if num_gpu > 0:
-                com += ["--gres=gpu:{}".format(num_gpu)]
-            com += ["--mem={}".format(mem)]
-            com += ["--time={}".format(time_limit)]
-            if len(dep_str) > 0:
-                com += ["--dependency=afterany:{}".format(dep_str)]
-            com += ["--account={}".format(config.account)]
-            com += ["--output={}/%x-%j.out".format(config.output_dir)]
-            com += ["--export=ALL"]
-            com += [os.path.join(config.done_dir, job_script)]
+            if cluster_config[cluster]["job_system"] == "slurm":
+                com = slurm_command(num_cpu,
+                                    num_gpu,
+                                    mem,
+                                    time_limit,
+                                    dep_str,
+                                    config.account,
+                                    config.output_dir,
+                                    os.path.join(config.done_dir, job_script))
+            elif cluster_config[cluster]["job_system"] == "PBS":
+                com = PBS_command(num_cpu,
+                                  num_gpu,
+                                  mem,
+                                  time_limit,
+                                  dep_str,
+                                  config.account,
+                                  config.output_dir,
+                                  os.path.join(config.done_dir, job_script))
             slurm_res = subprocess.run(com, stdout=subprocess.PIPE)
             print(slurm_res.stdout.decode())
             # Get job ID
             if slurm_res.returncode != 0:
-                raise RuntimeError("Slurm error!")
+                raise RuntimeError("Slurm/PBS error!")
             job_id = slurm_res.stdout.decode().split()[-1]
             dep_str = str(job_id)
 
