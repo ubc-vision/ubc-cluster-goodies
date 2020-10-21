@@ -243,6 +243,8 @@ def main(config):
         cluster = "beluga"
     elif hostname.startswith("stirk"):
         cluster = "moo"
+    elif hostname.startswith("se"):
+        cluster = "sockeye"
     else:
         raise ValueError("Unknown cluster {}".format(hostname))
 
