@@ -159,6 +159,13 @@ global_arg.add_argument(
     help="Slurm account to use. "
          "Please change this to your compute canada account")
 
+
+global_arg.add_argument(
+    "--cluster", type=str,
+    default=None,
+    help="Name of the cluster.")
+
+
 global_arg.add_argument(
     "--todo_dir", type=str,
     default="./jobs/todo",
@@ -240,18 +247,21 @@ def main(config):
     hostname = socket.gethostname()
 
     # Identify cluster
-    if hostname.startswith("gra"):
-        cluster = "graham"
-    elif hostname.startswith("cedar") or hostname.startswith("cdr"):
-        cluster = "cedar"
-    elif hostname.startswith("beluga") or hostname.startswith("blg"):
-        cluster = "beluga"
-    elif hostname.startswith("stirk"):
-        cluster = "moo"
-    elif hostname.startswith("se"):
-        cluster = "sockeye"
+    if config.cluster is None:
+        if hostname.startswith("gra"):
+            cluster = "graham"
+        elif hostname.startswith("cedar") or hostname.startswith("cdr"):
+            cluster = "cedar"
+        elif hostname.startswith("beluga") or hostname.startswith("blg"):
+            cluster = "beluga"
+        elif hostname.startswith("stirk"):
+            cluster = "moo"
+        elif hostname.startswith("se"):
+            cluster = "sockeye"
+        else:
+            raise ValueError("Unknown cluster {}".format(hostname))
     else:
-        raise ValueError("Unknown cluster {}".format(hostname))
+        cluster = config.cluster
 
     # Apply default account if not specified
     if config.account is None:
