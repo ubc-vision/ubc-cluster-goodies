@@ -78,7 +78,7 @@ cluster_config = {
             "ram_per_node": 191000,
             "ram_per_gpu": 47500,
             "job_system": "slurm",
-            "default_account": "rrg-kyi ",
+            "default_account": "rrg-kyi",
         },
     "moo":
         {
