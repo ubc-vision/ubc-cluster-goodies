@@ -52,6 +52,7 @@ cluster_config = {
             "ram_per_node": 128000,
             "ram_per_gpu": 31500,
             "job_system": "slurm",
+            "default_account": "def-kyi",
         },
     "graham":
         {
@@ -64,6 +65,7 @@ cluster_config = {
             "ram_per_node": 127518,
             "ram_per_gpu": 63500,
             "job_system": "slurm",
+            "default_account": "def-kyi",
         },
     "beluga":
         {
@@ -76,6 +78,7 @@ cluster_config = {
             "ram_per_node": 191000,
             "ram_per_gpu": 47500,
             "job_system": "slurm",
+            "default_account": "rrg-kyi",
         },
     "moo":
         {
@@ -88,6 +91,7 @@ cluster_config = {
             "ram_per_node": 191000,
             "ram_per_gpu": 23875,
             "job_system": "slurm",
+            "default_account": "def-kyi",
         },
     "sockeye":
         {
@@ -100,6 +104,7 @@ cluster_config = {
             "ram_per_node": 191000,
             "ram_per_gpu": 47750,
             "job_system": "PBS",
+            "default_account": "st-kmyi-1-gpu",
         }
 }
 
@@ -150,7 +155,7 @@ global_arg = add_argument_group("Global")
 
 global_arg.add_argument(
     "--account", type=str,
-    default="def-kyi",
+    default=None,
     help="Slurm account to use. "
          "Please change this to your compute canada account")
 
@@ -247,6 +252,10 @@ def main(config):
         cluster = "sockeye"
     else:
         raise ValueError("Unknown cluster {}".format(hostname))
+
+    # Apply default account if not specified
+    if config.account is None:
+        config.account = cluster_config[cluster]["default_account"]
 
     # Get gpu usage statistics
     num_gpu = config.num_gpu
