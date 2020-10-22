@@ -132,12 +132,12 @@ def PBS_command(num_cpu, num_gpu, mem, time_limit, dep_str, account, output_dir,
     else:
         com += ["-l", "walltime={0},select=1:ncpus={1}:mem={2}".format(time_limit, num_cpu, mem)]
     if len(dep_str) > 0:
-        com += ["-W", "depend=afterok:{}".format(dep_str)]
+        com += ["-W", "depend=afterany:{}".format(dep_str)]
     com += ["-A", "{}".format(account)]
     com += ["-o", "{0}/{1}_{2}.out".format(output_dir,
-                                        os.path.basename(job),
-                                        str(datetime.datetime.now()).replace(" ", "_").replace(":", "_"),
-                                        )]
+                                           os.path.basename(job),
+                                           str(datetime.datetime.now()).replace(" ", "_").replace(":", "_"),
+                                           )]
     com += ["-V"]
     com += [job]
     return com
