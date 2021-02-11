@@ -104,7 +104,8 @@ cluster_config = {
             "ram_per_node": 191000,
             "ram_per_gpu": 47750,
             "job_system": "PBS",
-            "default_account": "st-kmyi-1-gpu",
+            "default_account": "pr-kmyi-1",
+            "default_gpu_account": "pr-kmyi-1-gpu",
         }
 }
 
@@ -266,12 +267,15 @@ def main(config):
     else:
         cluster = config.cluster
 
-    # Apply default account if not specified
-    if config.account is None:
-        config.account = cluster_config[cluster]["default_account"]
-
     # Get gpu usage statistics
     num_gpu = config.num_gpu
+
+    # Apply default account if not specified
+    if config.account is None:
+        if num_gpu > 0 and "default_gpu_account" in cluster_config[cluster]:
+            config.account = cluster_config[cluster]["default_gpu_account"]
+        else:
+            config.account = cluster_config[cluster]["default_account"]
 
     # Set options or automatically infer CPU and MEM
     num_cpu = config.num_cpu
