@@ -52,7 +52,7 @@ cluster_config = {
             "ram_per_node": 128000,
             "ram_per_gpu": 31500,
             "job_system": "slurm",
-            "default_account": "def-kyi",
+            "default_account": "rrg-kyi",
         },
     "graham":
         {
@@ -65,7 +65,7 @@ cluster_config = {
             "ram_per_node": 127518,
             "ram_per_gpu": 63500,
             "job_system": "slurm",
-            "default_account": "def-kyi",
+            "default_account": "def-kyi-ab",
         },
     "beluga":
         {
@@ -78,7 +78,7 @@ cluster_config = {
             "ram_per_node": 191000,
             "ram_per_gpu": 47500,
             "job_system": "slurm",
-            "default_account": "rrg-kyi",
+            "default_account": "def-kyi-ab",
         },
     "moo":
         {
