@@ -106,7 +106,20 @@ cluster_config = {
             "job_system": "PBS",
             "default_account": "pr-kmyi-1",
             "default_gpu_account": "pr-kmyi-1-gpu",
-        }
+        },
+    "narval":
+        {
+            "gpu_model": "a100",
+            "gpus_per_node": 4,
+            "cpu_cores_per_node": 48,
+            "threads_per_node": 96,
+            "cpu_cores_per_gpu": 12,
+            "threads_per_gpu": 24,
+            "ram_per_node": 510000,
+            "ram_per_gpu": 127500,
+            "job_system": "slurm",
+            "default_account": "def-kyi-ab",
+        },
 }
 
 
