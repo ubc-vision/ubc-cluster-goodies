@@ -275,6 +275,8 @@ def main(config):
             cluster = "moo"
         elif hostname.startswith("se"):
             cluster = "sockeye"
+        elif hostname.startswith("narval"):
+            cluster = "narval"
         else:
             raise ValueError("Unknown cluster {}".format(hostname))
     else:
