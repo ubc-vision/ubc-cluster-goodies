@@ -120,10 +120,18 @@ cluster_config = {
             "job_system": "slurm",
             "default_account": "def-kyi-ab",
         },
+    "snubfin":
+        {
+            "cpu_cores_per_gpu": 10,
+            "ram_per_gpu": 23785,
+            "job_system": "slurm",
+            "partition": "snubfin",
+            "nodelist": "snubfin1",
+        },
 }
 
 
-def slurm_command(num_cpu, num_gpu, mem, time_limit, dep_str, account, output_dir, job):
+def slurm_command(num_cpu, num_gpu, mem, time_limit, dep_str, account, output_dir, job, partition, nodelist):
     com = ["sbatch"]
     com += ["--cpus-per-task={}".format(num_cpu)]
     if num_gpu > 0:
@@ -132,14 +140,19 @@ def slurm_command(num_cpu, num_gpu, mem, time_limit, dep_str, account, output_di
     com += ["--time={}".format(time_limit)]
     if len(dep_str) > 0:
         com += ["--dependency=afterany:{}".format(dep_str)]
-    com += ["--account={}".format(account)]
+    if len(account) > 0:
+        com += ["--account={}".format(account)]
+    if partition and len(partition) > 0:
+        com += ["--partition={}".format(partition)]
+    if nodelist and len(nodelist) > 0:
+        com += ["--nodelist={}".format(nodelist)]
     com += ["--output={}/%x-%j.out".format(output_dir)]
     com += ["--export=ALL"]
     com += [job]
     return com
 
 
-def PBS_command(num_cpu, num_gpu, mem, time_limit, dep_str, account, output_dir, job):
+def PBS_command(num_cpu, num_gpu, mem, time_limit, dep_str, account, output_dir, job, partition, nodelist):
     com = ["qsub"]
     if num_gpu > 0:
         com += ["-l", "walltime={0},select=1:ncpus={1}:mem={2}:ngpus={3}".format(time_limit, num_cpu, mem, num_gpu)]
@@ -236,6 +249,14 @@ job_arg.add_argument(
     default="none",
     help="In case you want to schedule your jobs depending on something. "
          "Set to 'none' if not wanted.")
+job_arg.add_argument(
+    "--partition", type=str,
+    default=None,
+    help="Partition to be used.")
+job_arg.add_argument(
+    "--nodelist", type=str,
+    default=None,
+    help="List of nodes to be used.")
 
 
 def get_config():
@@ -277,6 +298,8 @@ def main(config):
             cluster = "sockeye"
         elif hostname.startswith("narval"):
             cluster = "narval"
+        elif hostname.startswith("borg"):
+            cluster = "snubfin"
         else:
             raise ValueError("Unknown cluster {}".format(hostname))
     else:
@@ -287,10 +310,16 @@ def main(config):
 
     # Apply default account if not specified
     if config.account is None:
-        if num_gpu > 0 and "default_gpu_account" in cluster_config[cluster]:
+        if "default_gpu_account" not in cluster_config[cluster] and "default_account" not in cluster_config[cluster]:
+            config.account = ""
+        elif num_gpu > 0 and "default_gpu_account" in cluster_config[cluster]:
             config.account = cluster_config[cluster]["default_gpu_account"]
         else:
             config.account = cluster_config[cluster]["default_account"]
+    if config.partition is None and "partition" in cluster_config[cluster]:
+        config.partition = cluster_config[cluster]["partition"]
+    if config.nodelist is None and "nodelist" in cluster_config[cluster]:
+        config.nodelist = cluster_config[cluster]["nodelist"]
 
     # Set options or automatically infer CPU and MEM
     num_cpu = config.num_cpu
@@ -357,7 +386,9 @@ def main(config):
                                     dep_str,
                                     config.account,
                                     config.output_dir,
-                                    os.path.join(config.done_dir, job_script))
+                                    os.path.join(config.done_dir, job_script),
+                                    config.partition,
+                                    config.nodelist)
             elif cluster_config[cluster]["job_system"] == "PBS":
                 com = PBS_command(num_cpu,
                                   num_gpu,
@@ -366,7 +397,9 @@ def main(config):
                                   dep_str,
                                   config.account,
                                   config.output_dir,
-                                  os.path.join(config.done_dir, job_script))
+                                  os.path.join(config.done_dir, job_script),
+                                  config.partition,
+                                  config.nodelist)
             slurm_res = subprocess.run(com, stdout=subprocess.PIPE)
             print(slurm_res.stdout.decode())
             # Get job ID
