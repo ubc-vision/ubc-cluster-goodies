@@ -126,7 +126,6 @@ cluster_config = {
             "ram_per_gpu": 23785,
             "job_system": "slurm",
             "partition": "snubfin",
-            "nodelist": "snubfin1",
         },
 }
 
