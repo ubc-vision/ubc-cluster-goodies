@@ -25,6 +25,15 @@ ComputeCanada is shared across researchers in Canada. Also, the login-nodes are 
 
 Another thing is that the file system on ComputeCanada is NFS, with dedicated purposes. `project` is for shared projects. You will **NOT** need to use them unless you are saving results for **shared projects**. `home` is where you store your stuff, but **NOT** the code. `scratch` is where you want to have everything. Use `scratch/<login-id>` to store your code, and the results, and then copy only the **IMPORTANT** ones to your home or projects. `scratch` has the **FASTEST** access delay. So you really want to do everything here. For more details visit [here](https://docs.computecanada.ca/wiki/Storage_and_file_management)
 
+## Resources (pr-kmyi group only)
+1. 187 core-years on the cedar-compute system
+2. 8.0 RGU-years on the cedar-gpu system
+3. 24.0 RGU-years on the narval-gpu system
+4. 100 TB of /project storage on the narval-storage system
+5. 40 TB of /nearline storage on the narval-storage system
+6. 200 TB of /project storage on the cedar-storage system
+7. 8.0 Millions /project inodes on the cedar-storage system
+
 ## The module system
 
 One very interesting thing about the ComputeCanada setup is that you can simply load the modules on-demand. These modules could be `CUDA`, `CUDNN`, `GCC`, `OpenCV` or whatever you would like. You can also specify their versions. To see which modules are loaded, do
